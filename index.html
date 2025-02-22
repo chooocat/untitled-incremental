@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>untitled incremental</title>
+    <link rel='stylesheet' type='text/css' href='style.css'>
+</head>
+<body>
+    <div id="app">
+        <!--top-->
+        untitled incremental (v1.0.0) <br>
+        Endgame: <b>1Qn Points</b> <br>
+        _________________________________ <br>
+        <h2>You have {{ frt(player.points) }} Points</h2>
+
+        <!--tab selector-->
+
+        <div id="tab-selector">
+            <button onclick="swtichOnClick_upgrades()" style="display: inline-block;">Upgrades</button>
+            <button onclick="swtichOnClick_points()" id="tab-points" style="display: none;">Points</button>
+            <button onclick="swtichOnClick_prestige()" id="tab-prestige" style="display: inline-block; background-color: rgb(0, 223, 223); border-color: darkcyan;">Prestige</button>
+             | 
+            <button onclick="swtichOnClick_settings()" style="display: inline-block;">Settings</button>
+        </div> <br>
+
+        <!--tab (upgrades)-->
+
+        <div id="upgrades-tab" style="display: block;">
+            <button onclick="upgrade()" id="upg_But">
+                <b>[ {{ upgrades[player.currentUpgrade].Title }} ]</b> <br>
+                {{ upgrades[player.currentUpgrade].Info }} <br> <br>
+                Cost: {{ frt(upgrades[player.currentUpgrade].Cost) }} Points
+            </button> <br> <br>
+            <div id="upgrade-log">
+                Upgrade Log:
+            </div>
+        </div>
+
+        <!--tab (points)-->
+
+        <div id="points-tab" style="display: none;">
+            <div id="subtab-selector">
+                <button onclick="swtichOnClick_boostersPoints()">Boosters</button>
+            </div> <br>
+
+            <div id="booster-points-tab" style="display: block;">
+                Boosters gain more Points. Boosters on purchase reset Points <br>
+                If the cost is way more than it supposed to be - refresh (either its softcap) <br> <br>
+                <div id="boosters">
+                    <div id="row1Boosters" style="display: flex;">
+                        <div id="booster1" style="background-color: rgb(49, 49, 49); height: 190px; width: 300px; margin-right: 20px;">
+                            <br><b>[ Booster I ]</b> ({{frt(player.boosters[1].Bought)}}) <br> <br>
+                            Effect: <b>x{{ frt(player.boosters[1].Effect) }} Points</b> <br>
+                            Cost: <b>{{ frt(player.boosters[1].Cost) }} Points</b> <br> <br>
+                            <button onclick="buyBooster(1, 'single')">Buy 1</button> <br> <br>
+                            <button onclick="buyBooster(1, 'max')">Buy Max</button><br>
+                        </div>
+                        <div id="booster2" style="background-color: rgb(49, 49, 49); height: 190px; width: 300px; margin-right: 20px;">
+                            <br><b>[ Booster II ]</b> ({{frt(player.boosters[2].Bought)}}) <br> <br>
+                            Effect: <b>x{{ frt(player.boosters[2].Effect) }} Points</b> <br>
+                            Cost: <b>{{ frt(player.boosters[2].Cost) }} Points</b> <br> <br>
+                            <button onclick="buyBooster(2, 'single')">Buy 1</button> <br> <br>
+                            <button onclick="buyBooster(2, 'max')">Buy Max</button><br>
+                        </div>
+                    </div>
+                    <div id="row2Boosters" style="display: none;">
+                        <br> This row boost Boosters <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="prestige-tab" style="display: none;">
+            <div id="subtab-selector">
+                <button onclick="swtichOnClick_resetPrestige()" style="display: inline-block;" id="tab-prestige-reset">Reset</button>
+                <button onclick="swtichOnClick_upgradesPrestige()" style="display: inline-block;" id="tab-prestige-upgrades">Upgrades</button>
+                <button onclick="swtichOnClick_buyablesPrestige()" style="display: inline-block;" id="tab-prestige-buyables">Buyables</button>
+            </div> <br>
+
+            <b style="color: aqua; font-size: x-large;">You have {{ frt(player.prestige) }} Prestige Points</b>
+            <b style="color: aqua;">(+{{ frt(player.prestige_gain) }})</b> <br> <br>
+
+            <div id="reset-prestige-tab" style="display: block;">
+                <button onclick="prestige()" id="prestigeReset" style="background-color: rgb(0, 255, 255); border-color: darkcyan;">
+                    <b>[ Prestige ]</b> <br>
+                    Reset everything up to this point to Prestige and gain Prestige Points <br> <br>
+                    {{ player.prestige_gain_desc }}
+                </button>
+            </div>
+
+            <div id="upgrades-prestige-tab" style="display: none;">
+                <div id="prestige-upgrades">
+                    <div id="row1Upgrades" style="display: flex;">
+                        <div id="upgrade1" style="background-color: rgb(0, 56, 56); height: 200px; width: 300px; margin-right: 20px;">
+                            <br><b style="color: aqua;">[ Upgrade I ]</b> <br> <br>
+                            Effect: <b style="color: aqua;">Prestige boost Point gain -> x{{ frt(player.upgrades2[1].Effect) }} Points</b> <br> <br>
+                            Cost: <b style="color: aqua;">{{ frt(player.upgrades2[1].Cost) }} Prestige Points</b> <br> <br>
+                            <button onclick="upgrade2(1)" id="upgrade-pres-1"><br> Buy Upgrade <br><br></button> <br> <br>
+                        </div>
+                        <div id="upgrade2" style="background-color: rgb(0, 56, 56); height: 200px; width: 300px; margin-right: 20px;">
+                            <br><b style="color: aqua;">[ Upgrade II ]</b> <br> <br>
+                            Effect: <b style="color: aqua;">Points boost Point gain -> x{{ frt(player.upgrades2[2].Effect) }} Points</b> <br> <br>
+                            Cost: <b style="color: aqua;">{{ frt(player.upgrades2[2].Cost) }} Prestige Points</b> <br> <br>
+                            <button onclick="upgrade2(2)" id="upgrade-pres-2"><br> Buy Upgrade <br><br></button> <br> <br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="buyables-prestige-tab" style="display: none;">
+                <div id="prestige-buyables">
+                    <div id="row1Buybales" style="display: flex;">
+                        <div id="buyable1" style="background-color: rgb(0, 45, 97); height: 190px; width: 300px; margin-right: 20px;">
+                            <br><b style="color: lightblue;">[ Buyable I ]</b> ({{frt(player.buyables[1].Bought)}}) <br> <br>
+                            Effect: <b>x{{ frt(player.buyables[1].Effect) }} Points</b> <br>
+                            Cost: <b style="color: aqua;">{{ frt(player.buyables[1].Cost) }} Prestige Points</b> <br> <br>
+                            <button onclick="buyBuyable(1, 'single')">Buy 1</button> <br> <br>
+                            <button onclick="buyBuyable(1, 'max')">Buy Max</button><br>
+                        </div>
+                        <div id="buyable2" style="background-color: rgb(0, 45, 97); height: 190px; width: 300px; margin-right: 20px;">
+                            <br><b style="color: lightblue;">[ Buyable II ]</b> ({{frt(player.buyables[2].Bought)}}) <br> <br>
+                            Effect: <b style="color: aqua;">x{{ frt(player.buyables[2].Effect) }} Prestige Points</b> <br>
+                            Cost: <b style="color: aqua;">{{ frt(player.buyables[2].Cost) }} Prestige Points</b> <br> <br>
+                            <button onclick="buyBuyable(2, 'single')">Buy 1</button> <br> <br>
+                            <button onclick="buyBuyable(2, 'max')">Buy Max</button><br>
+                        </div>
+                    </div>
+                    <div id="row2Boosters" style="display: none;">
+                        <br> This row boost Boosters <br>
+                    </div>
+                </div>
+            </div>
+        </div>  
+
+        <!--tab (settings)-->
+
+        <div id="settings-tab" style="display: none;">
+            <hr>
+            Main<hr>
+            <br> <br>
+            <button onclick="set(1)" id="setting-1">Enable upgrade log: ON</button> <br> <br>
+            Confirmations <br><br>
+            <button onclick="set(100)" id="setting-100">Prestige: ON</button> <br> <br>
+
+            <br><br><br><hr>
+            Save <hr>
+            <br> <br>
+            <button onclick="save()" id="setting-manual-1">Save Data [Manual]</button> <br> <br>
+
+            <br><br><br><hr>
+            ! DANGER ZONE ! <hr>
+            <br> <br>
+            <button onclick="hardReset()" style="background-color: lightcoral; border-color: red;">Hard Reset</button>
+
+            <br><br><br>
+            Game made by @imsphereal (<a href="https://github.com/chooocat" target="_blank">GitHub</a> / <a href="https://galaxy.click/user/12770" target="_blank">galaxy.click</a>)
+        </div>
+    </div>
+
+    <!--scripts-->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+    <script src="js/break_eternity.js"></script>
+    <script src="js/format.js"></script>
+    
+    <script src="js/data.js"></script>
+    <script src="js/calc.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/misc.js"></script>
+</body>
+</html>
