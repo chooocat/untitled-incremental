@@ -9,8 +9,8 @@
 <body>
     <div id="app">
         <!--top-->
-        untitled incremental (v1.0.0) <br>
-        Endgame: <b>1Qn Points</b> <br>
+        untitled incremental (v1.1.0 Part 1) <br>
+        Endgame: <b>1e33 Points</b> <br>
         _________________________________ <br>
         <h2>You have {{ frt(player.points) }} Points</h2>
 
@@ -63,6 +63,13 @@
                             <button onclick="buyBooster(2, 'single')">Buy 1</button> <br> <br>
                             <button onclick="buyBooster(2, 'max')">Buy Max</button><br>
                         </div>
+                        <div id="booster3" style="background-color: rgb(49, 49, 49); height: 190px; width: 300px; margin-right: 20px;">
+                            <br><b>[ Booster III ]</b> ({{frt(player.boosters[3].Bought)}}) <br> <br>
+                            Effect: <b>x{{ frt(player.boosters[3].Effect) }} Points</b> <br>
+                            Cost: <b>{{ frt(player.boosters[3].Cost) }} Points</b> <br> <br>
+                            <button onclick="buyBooster(3, 'single')">Buy 1</button> <br> <br>
+                            <button onclick="buyBooster(3, 'max')">Buy Max</button><br>
+                        </div>
                     </div>
                     <div id="row2Boosters" style="display: none;">
                         <br> This row boost Boosters <br>
@@ -103,6 +110,12 @@
                             Effect: <b style="color: aqua;">Points boost Point gain -> x{{ frt(player.upgrades2[2].Effect) }} Points</b> <br> <br>
                             Cost: <b style="color: aqua;">{{ frt(player.upgrades2[2].Cost) }} Prestige Points</b> <br> <br>
                             <button onclick="upgrade2(2)" id="upgrade-pres-2"><br> Buy Upgrade <br><br></button> <br> <br>
+                        </div>
+                        <div id="upgrade3" style="background-color: rgb(0, 56, 56); height: 200px; width: 300px; margin-right: 20px;">
+                            <br><b style="color: aqua;">[ Upgrade III ]</b> <br> <br>
+                            <b style="color: aqua;">Unlock third Booster</b> <br> <br>
+                            Cost: <b style="color: aqua;">{{ frt(player.upgrades2[3].Cost) }} Prestige Points</b> <br> <br>
+                            <button onclick="upgrade2(3)" id="upgrade-pres-3"><br> Buy Upgrade <br><br></button> <br> <br>
                         </div>
                     </div>
                 </div>

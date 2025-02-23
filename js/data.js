@@ -16,6 +16,11 @@ var player = {
             Bought: new Decimal(0),
             Effect: new Decimal(1),
         },
+        3: {
+            Cost: new Decimal(1e15),
+            Bought: new Decimal(0),
+            Effect: new Decimal(1),
+        },
     },
 
     upgrades2: {
@@ -27,6 +32,11 @@ var player = {
         2: {
             Bought: false,
             Cost: new Decimal(8),
+            Effect: new Decimal(1)
+        },
+        3: {
+            Bought: false,
+            Cost: new Decimal(35),
             Effect: new Decimal(1)
         },
     },
@@ -146,6 +156,26 @@ var upgrades = {
         Cost: 1e15,
     },
     18: {
+        Title: "Boosting ~ Tier 2",
+        Info: "x2.5 Point and x1.25 Prestige Point gain",
+        Cost: 1e18,
+    },
+    19: {
+        Title: "Boosting 2.0",
+        Info: "x1.3 Prestige Point gain",
+        Cost: 1e21,
+    },
+    20: {
+        Title: "Base exponent increase",
+        Info: "+0.035 base to Booster I",
+        Cost: 1e25,
+    },
+    21: {
+        Title: "Power up the formulas!",
+        Info: "Second Prestige upgrade's formula is slightly better",
+        Cost: 5e31,
+    },
+    22: {
         Title: "Maxed!",
         Info: "You have bought all upgrades",
         Cost: ":D",
@@ -181,6 +211,12 @@ function get_boosterCost(bo) {
         return form
     } else if (bo == 2) {
         let form = new Decimal(5).pow(b.Bought).mul(1e4)
+        if (b.Bought.gte(35)) {
+            form = new Decimal(8).pow(b.Bought).mul(1e9)
+        }
+        return form
+    } else if (bo == 3) {
+        let form = new Decimal(1e3).pow(b.Bought).mul(1e15)
         return form
     }
 }
@@ -206,10 +242,12 @@ function save() {
     //points
     localStorage.setItem("player-booster1", JSON.stringify(player.boosters[1].Bought.toString()))
     localStorage.setItem("player-booster2", JSON.stringify(player.boosters[2].Bought.toString()))
+    localStorage.setItem("player-booster3", JSON.stringify(player.boosters[3].Bought.toString()))
 
     //prestige
     localStorage.setItem("player-upgrade2-1", JSON.stringify(player.upgrades2[1].Bought))
     localStorage.setItem("player-upgrade2-2", JSON.stringify(player.upgrades2[2].Bought))
+    localStorage.setItem("player-upgrade2-3", JSON.stringify(player.upgrades2[3].Bought))
     localStorage.setItem("player-buyables1", JSON.stringify(player.buyables[1].Bought.toString()))
     localStorage.setItem("player-buyables2", JSON.stringify(player.buyables[2].Bought.toString()))
 
@@ -233,10 +271,13 @@ function load() {
     player.boosters[1].Cost = get_boosterCost(1)
     player.boosters[2].Bought = new Decimal(JSON.parse(localStorage.getItem("player-booster2")) || 0)
     player.boosters[2].Cost = get_boosterCost(2)
+    player.boosters[3].Bought = new Decimal(JSON.parse(localStorage.getItem("player-booster3")) || 0)
+    player.boosters[3].Cost = get_boosterCost(3)
 
     //prestige
     player.upgrades2[1].Bought = JSON.parse(localStorage.getItem("player-upgrade2-1")) || false
     player.upgrades2[2].Bought = JSON.parse(localStorage.getItem("player-upgrade2-2")) || false
+    player.upgrades2[3].Bought = JSON.parse(localStorage.getItem("player-upgrade2-3")) || false
     player.buyables[1].Bought = new Decimal(JSON.parse(localStorage.getItem("player-buyables1")) || 0)
     player.buyables[1].Cost = get_buyablesCost(1)
     player.buyables[2].Bought = new Decimal(JSON.parse(localStorage.getItem("player-buyables2")) || 0)
@@ -264,6 +305,7 @@ function cleanPlayer() {
 
     player.upgrades2[1].Bought = false
     player.upgrades2[2].Bought = false
+    player.upgrades2[3].Bought = false
     player.buyables[1].Bought = new Decimal(0)
     player.buyables[2].Bought = new Decimal(0)
 

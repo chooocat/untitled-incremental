@@ -41,8 +41,10 @@ function prestige_reset() {
     player.currentUpgrade = 1
     player.boosters[1].Bought = new Decimal(0)
     player.boosters[2].Bought = new Decimal(0)
+    player.boosters[3].Bought = new Decimal(0)
     player.boosters[1].Cost = get_boosterCost(1)
     player.boosters[2].Cost = get_boosterCost(2)
+    player.boosters[3].Cost = get_boosterCost(3)
 }
 
 function p() {
@@ -78,9 +80,11 @@ function checkUnlocks() {
     if (hasUpgrade(16) || player.prestiged) {document.getElementById("tab-prestige").style.display = "inline-block"} else {document.getElementById("tab-prestige").style.display = "none"}
     if (player.prestiged) {document.getElementById("tab-prestige-upgrades").style.display = "inline-block"} else {document.getElementById("tab-prestige-upgrades").style.display = "none"}
     if (player.prestiged) {document.getElementById("tab-prestige-buyables").style.display = "inline-block"} else {document.getElementById("tab-prestige-buyables").style.display = "none"}
+    if (player.upgrades2[3].Bought == true) {document.getElementById("booster3").style.display = "inline-block"} else {document.getElementById("booster3").style.display = "none"}
 
     if (player.upgrades2[1].Bought == true) {document.getElementById("upgrade-pres-1").style.display = "none"} else {document.getElementById("upgrade-pres-1").style.display = "inline-block"}
     if (player.upgrades2[2].Bought == true) {document.getElementById("upgrade-pres-2").style.display = "none"} else {document.getElementById("upgrade-pres-2").style.display = "inline-block"}
+    if (player.upgrades2[3].Bought == true) {document.getElementById("upgrade-pres-3").style.display = "none"} else {document.getElementById("upgrade-pres-3").style.display = "inline-block"}
 
     if (player.prestiged) {document.getElementById("setting-100").style.display = "inline-block"} else {document.getElementById("setting-100").style.display = "none"}
     if (player.enableUpgLogs == true) {document.getElementById("upgrade-log").style.display = "inline-block"} else {document.getElementById("upgrade-log").style.display = "none"}

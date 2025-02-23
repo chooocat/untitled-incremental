@@ -16,6 +16,12 @@ function get_boosterCost(bo) {
         return form
     } else if (bo == 2) {
         let form = new Decimal(5).pow(b.Bought).mul(1e4)
+        if (b.Bought.gte(35)) {
+            form = new Decimal(8).pow(b.Bought).mul(1e9)
+        }
+        return form
+    } else if (bo == 3) {
+        let form = new Decimal(1e3).pow(b.Bought).mul(1e15)
         return form
     }
 }
@@ -45,6 +51,15 @@ function get_boosterLevel(bo, type) {
         }
     } else if (bo == 2) {
         form = player.points.div(1e4).log(5).add(1).floor()
+        if (b.Bought.gte(35)) {
+            form = player.points.div(1e9).log(8).add(1).floor()
+        } else {
+            if (form.gte(35)) {
+                form = new Decimal(35)
+            }
+        }
+    } else if (bo == 3) {
+        form = player.points.div(1e15).log(1e3).add(1).floor()
     }
     if (type == "single" && form.gt(b.Bought)) {
         form = b.Bought.add(1)
@@ -68,11 +83,17 @@ function get_buyablesLevel(bo, type) {
 
 function updateEffects() {
     let exp = new Decimal(1.35)
+    //booster 1 calcs
+    if (hasUpgrade(20)) {exp = exp.add(0.035)};
     player.boosters[1].Effect = new Decimal(exp).pow(player.boosters[1].Bought)
+
+    //other
     player.boosters[2].Effect = new Decimal(1.85).pow(player.boosters[2].Bought)
+    player.boosters[3].Effect = new Decimal(2.22).pow(player.boosters[3].Bought)
     player.buyables[1].Effect = new Decimal(2).pow(player.buyables[1].Bought)
     player.buyables[2].Effect = new Decimal(1.1).pow(player.buyables[2].Bought)
 
+    //upgrades2 calcs
     if (player.upgrades2[1].Bought) {
         let form = player.prestige.add(2).pow(0.35)
         if (form.gte(1)) {
@@ -81,7 +102,9 @@ function updateEffects() {
     } else {player.upgrades2[1].Effect = new Decimal(1)}
 
     if (player.upgrades2[2].Bought) {
-        let form = player.points.add(1).log(10).pow(0.4)
+        let exp = new Decimal(0.4)
+        if (hasUpgrade(21)) {exp = exp.add(0.1)}
+        let form = player.points.add(1).log(10).pow(exp)
         if (form.gte(1)) {
             player.upgrades2[2].Effect = form
         } else {player.upgrades2[2].Effect = new Decimal(1)}
@@ -107,11 +130,13 @@ function calc_points() {
     if (hasUpgrade(15)) {base = base.mul(1.99)};
     if (hasUpgrade(16)) {base = base.mul(2)};
     if (hasUpgrade(17)) {base = base.mul(3.5)};
+    if (hasUpgrade(18)) {base = base.mul(2.5)};
 
     if (hasUpgrade(10)) {
         base = base.mul(1.5)
         base = base.mul(player.boosters[1].Effect)
         base = base.mul(player.boosters[2].Effect)
+        base = base.mul(player.boosters[3].Effect)
     };
 
     if (hasUpgrade2(1)) {
@@ -130,6 +155,9 @@ function calc_points() {
 function calc_prestige() {
     let base = player.points.div(1e14).pow(0.2)
     
+    if (hasUpgrade(18)) {base = base.mul(1.25)};
+    if (hasUpgrade(19)) {base = base.mul(1.3)};
+
     base = base.mul(player.buyables[2].Effect)
 
     return base
