@@ -13,6 +13,13 @@ function set(id) {
         } else {
             document.getElementById("setting-"+id).innerHTML = "Prestige: OFF"
         }
+    } else if (id == 101) {
+        player.super_confirm = !player.super_confirm
+        if (player.super_confirm) {
+            document.getElementById("setting-"+id).innerHTML = "Super-Points: ON"
+        } else {
+            document.getElementById("setting-"+id).innerHTML = "Super-Points: OFF"
+        }
     }
 
     save()
@@ -28,6 +35,12 @@ if (player.prestige_confirm) {
     document.getElementById("setting-"+100).innerHTML = "Prestige: ON"
 } else {
     document.getElementById("setting-"+100).innerHTML = "Prestige: OFF"
+}
+
+if (player.super_confirm) {
+    document.getElementById("setting-"+101).innerHTML = "Super-Points: ON"
+} else {
+    document.getElementById("setting-"+101).innerHTML = "Super-Points: OFF"
 }
 
 function swtichOnClick_upgrades() {
@@ -60,6 +73,12 @@ function swtichOnClick_settings() {
 
 function swtichOnClick_boostersPoints() {
     document.getElementById("booster-points-tab").style.display = "inline-block"
+    document.getElementById("super-points-tab").style.display = "none"
+}
+
+function swtichOnClick_superPoints() {
+    document.getElementById("booster-points-tab").style.display = "none"
+    document.getElementById("super-points-tab").style.display = "inline-block"
 }
 
 function swtichOnClick_resetPrestige() {

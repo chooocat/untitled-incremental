@@ -1,9 +1,13 @@
 var player = {
     points: new Decimal(0),
+    bestPoints: new Decimal(0),
+    oldBestPoints: new Decimal(1e100),
+    spoints: new Decimal(0),
     prestige: new Decimal(0),
 
     boughtUpgrades: 0,
     currentUpgrade: 1,
+    activeChal: 0,
 
     boosters: {
         1: {
@@ -56,17 +60,31 @@ var player = {
         },
     },
 
+    challenges: {
+        1: {
+            Require: new Decimal(1e12),
+            Reached: false,
+            Best: new Decimal(0),
+            //chal. stats
+            Score: new Decimal(0),
+        },
+    },
+
     //settings
     enableUpgLogs: true,
 
     prestige_confirm: true,
+    super_confirm: true,
 
     //stats below for checks
     prestiged: false,
 
     //stats below not requires saving/loading
+    spoints_cap: new Decimal(10), //i think not required?
     prestige_gain: new Decimal(0),
     prestige_gain_desc: "Required 100T Points",
+    super_gain: new Decimal(0),
+    super_gain_desc: "Required 1e100 Points",
 }
 
 var upgrades = {
@@ -176,6 +194,56 @@ var upgrades = {
         Cost: 5e31,
     },
     22: {
+        Title: "Boosting 14",
+        Info: "x2.02 Point gain",
+        Cost: 1e33,
+    },
+    23: {
+        Title: "Boosting 15",
+        Info: "x2.2901158923457452435436234568758435 Point gain",
+        Cost: 2.5e34,
+    },
+    24: {
+        Title: "Boosting 16",
+        Info: "x5 Point gain",
+        Cost: 1e35,
+    },
+    25: {
+        Title: "Boosting 17",
+        Info: "x10 Point gain",
+        Cost: 1e36,
+    },
+    26: {
+        Title: "Boosting 18",
+        Info: "x3.33 Point gain",
+        Cost: 1e40,
+    },
+    27: {
+        Title: "Nerfed Self-Gain",
+        Info: "Points are boosted based on Points (x"+frt(player.points.add(10).log(6).pow(0.4))+")",
+        Cost: 4.44e44,
+    },
+    28: {
+        Title: "Scary number",
+        Info: "x6.66 Point gain",
+        Cost: 6.66e66,
+    },
+    29: {
+        Title: "Boosting 19",
+        Info: "x3.21 Point gain",
+        Cost: 6e86,
+    },
+    30: {
+        Title: "the",
+        Info: "Unlock Super-Points (still resets on Prestige :sob:)",
+        Cost: 1e100,
+    },
+    31: {
+        Title: "Actually first QoL???",
+        Info: "On S-Point reset instead of reseting Prestige to 0 >>> ^0.1 the currency",
+        Cost: 1e125,
+    },
+    32: {
         Title: "Maxed!",
         Info: "You have bought all upgrades",
         Cost: ":D",
@@ -235,7 +303,10 @@ function get_buyablesCost(bo) {
 function save() {
     //main
     localStorage.setItem("player-points", JSON.stringify(player.points.toString()))
+    localStorage.setItem("player-best-points", JSON.stringify(player.bestPoints.toString()))
+    localStorage.setItem("player-oldbest-points", JSON.stringify(player.oldBestPoints.toString()))
     localStorage.setItem("player-prestige", JSON.stringify(player.prestige.toString()))
+    localStorage.setItem("player-super", JSON.stringify(player.spoints.toString()))
     localStorage.setItem("player-boughtUpgrades", JSON.stringify(player.boughtUpgrades))
     localStorage.setItem("player-currentUpgrade", JSON.stringify(player.currentUpgrade))
 
@@ -251,18 +322,31 @@ function save() {
     localStorage.setItem("player-buyables1", JSON.stringify(player.buyables[1].Bought.toString()))
     localStorage.setItem("player-buyables2", JSON.stringify(player.buyables[2].Bought.toString()))
 
+    //other
+    localStorage.setItem("player-c1", JSON.stringify(player.challenges[1].Reached))
+    localStorage.setItem("player-c1-best", JSON.stringify(player.challenges[1].Best))
+    localStorage.setItem("player-c1-score", JSON.stringify(player.challenges[1].Score))
+
+    localStorage.setItem("player-currentC", JSON.stringify(player.activeChal))
+
     //checks
     localStorage.setItem("player-prestiged", JSON.stringify(player.prestiged))
 
     //settings
     localStorage.setItem("player-setting-enableUpgLogs", JSON.stringify(player.enableUpgLogs))
     localStorage.setItem("player-setting-prestige_confirm", JSON.stringify(player.prestige_confirm))
+    localStorage.setItem("player-setting-super_confirm", JSON.stringify(player.super_confirm))
 }
 
 function load() {
+    if (JSON.parse(localStorage.getItem("player-points")) == null) {forceHReset(); return}
+
     //main
     player.points = new Decimal(JSON.parse(localStorage.getItem("player-points")) || 0)
+    player.bestPoints = new Decimal(JSON.parse(localStorage.getItem("player-best-points")) || 0)
+    player.oldBestPoints = new Decimal(JSON.parse(localStorage.getItem("player-oldbest-points")) || 0)
     player.prestige = new Decimal(JSON.parse(localStorage.getItem("player-prestige")) || 0)
+    player.spoints = new Decimal(JSON.parse(localStorage.getItem("player-super")) || 0)
     player.boughtUpgrades = JSON.parse(localStorage.getItem("player-boughtUpgrades")) || 0
     player.currentUpgrade = JSON.parse(localStorage.getItem("player-currentUpgrade")) || 1
 
@@ -283,12 +367,20 @@ function load() {
     player.buyables[2].Bought = new Decimal(JSON.parse(localStorage.getItem("player-buyables2")) || 0)
     player.buyables[2].Cost = get_buyablesCost(2)
 
+    //other
+    player.challenges[1].Reached = JSON.parse(localStorage.getItem("player-c1")) || false
+    player.challenges[1].Best = new Decimal(JSON.parse(localStorage.getItem("player-c1-best")) || 0)
+    player.challenges[1].Score = new Decimal(JSON.parse(localStorage.getItem("player-c1-score")) || 0)
+
+    player.activeChal = JSON.parse(localStorage.getItem("player-currentC")) || 0
+
     //checks
     player.prestiged = JSON.parse(localStorage.getItem("player-prestiged")) || false
 
     //settings
     player.enableUpgLogs = JSON.parse(localStorage.getItem("player-setting-enableUpgLogs"))
     player.prestige_confirm = JSON.parse(localStorage.getItem("player-setting-prestige_confirm"))
+    player.super_confirm = JSON.parse(localStorage.getItem("player-setting-super_confirm"))
 
     //debug
     console.log("Game loaded")
@@ -296,7 +388,11 @@ function load() {
 
 function cleanPlayer() {
     player.points = new Decimal(0)
+    player.bestPoints = new Decimal(0)
+    player.oldBestPoints = new Decimal(0)
     player.prestige = new Decimal(0)
+    player.spoints = new Decimal(0)
+    
     player.boughtUpgrades = 0
     player.currentUpgrade = 1
 
@@ -309,9 +405,21 @@ function cleanPlayer() {
     player.buyables[1].Bought = new Decimal(0)
     player.buyables[2].Bought = new Decimal(0)
 
+    player.challenges[1].Reached = false
+    player.challenges[1].Best = new Decimal(0)
+    player.challenges[1].Score = new Decimal(0)
+
     player.prestiged = false
 
     player.enableUpgLogs = true
+    player.prestige_confirm = true
+    player.super_confirm = true
+}
+
+function forceHReset() {
+    cleanPlayer()
+    save()
+    location.reload()
 }
 
 function hardReset() {

@@ -6,6 +6,10 @@ function hasUpgrade2(val) {
     return player.upgrades2[val].Bought == true
 }
 
+function inChal(id) {
+    return player.activeChal == id
+}
+
 function get_boosterCost(bo) {
     const b = player.boosters[bo]
     if (bo == 1) {
@@ -90,7 +94,19 @@ function updateEffects() {
     //other
     player.boosters[2].Effect = new Decimal(1.85).pow(player.boosters[2].Bought)
     player.boosters[3].Effect = new Decimal(2.22).pow(player.boosters[3].Bought)
-    player.buyables[1].Effect = new Decimal(2).pow(player.buyables[1].Bought)
+
+    if (player.buyables[1].Bought.gte(25)) {
+        player.buyables[1].Effect = new Decimal(2).pow(player.buyables[1].Bought).pow(0.93)
+
+        if (player.buyables[1].Bought.gte(50)) {
+            player.buyables[1].Effect = new Decimal(2).pow(player.buyables[1].Bought).pow(0.85)
+        }
+
+        document.getElementById("b1ed").innerHTML = " | SOFTCAPPED"
+    } else {
+        player.buyables[1].Effect = new Decimal(2).pow(player.buyables[1].Bought)
+    }
+
     player.buyables[2].Effect = new Decimal(1.1).pow(player.buyables[2].Bought)
 
     //upgrades2 calcs
@@ -131,6 +147,14 @@ function calc_points() {
     if (hasUpgrade(16)) {base = base.mul(2)};
     if (hasUpgrade(17)) {base = base.mul(3.5)};
     if (hasUpgrade(18)) {base = base.mul(2.5)};
+    if (hasUpgrade(22)) {base = base.mul(2.02)};
+    if (hasUpgrade(23)) {base = base.mul(2.29011589234574)};
+    if (hasUpgrade(24)) {base = base.mul(5)};
+    if (hasUpgrade(25)) {base = base.mul(10)};
+    if (hasUpgrade(26)) {base = base.mul(3.33)};
+    if (hasUpgrade(27)) {base = base.mul(player.points.add(10).log(6).pow(0.4))};
+    if (hasUpgrade(28)) {base = base.mul(6.66)};
+    if (hasUpgrade(29)) {base = base.mul(3.21)};
 
     if (hasUpgrade(10)) {
         base = base.mul(1.5)
@@ -139,15 +163,13 @@ function calc_points() {
         base = base.mul(player.boosters[3].Effect)
     };
 
-    if (hasUpgrade2(1)) {
-        base = base.mul(player.upgrades2[1].Effect)
-    }
-
-    if (hasUpgrade2(2)) {
-        base = base.mul(player.upgrades2[2].Effect)
-    }
-
+    base = base.mul(player.upgrades2[1].Effect)
+    base = base.mul(player.upgrades2[2].Effect)
     base = base.mul(player.buyables[1].Effect)
+
+    base = base.mul(new Decimal(1.7).pow(player.spoints))
+
+    if (inChal(1)) {base = base.pow(0.25)}
 
     return base
 }
@@ -159,6 +181,28 @@ function calc_prestige() {
     if (hasUpgrade(19)) {base = base.mul(1.3)};
 
     base = base.mul(player.buyables[2].Effect)
+
+    return base
+}
+
+function calc_super() {
+    let base = player.points.div(1e100).log(10).pow(0.5).sub(player.spoints.add(1))
+    
+    if (base.gte(player.spoints_cap)) {
+        base = player.spoints_cap.sub(player.spoints)
+    }
+
+    if (base.lt(0)) {
+        base = 0
+    }
+
+    return base
+}
+
+function calc_superCap() {
+    let base = new Decimal(10)
+
+    base = base.mul(player.challenges[1].Score.pow(0.5))
 
     return base
 }

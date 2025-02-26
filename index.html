@@ -9,8 +9,8 @@
 <body>
     <div id="app">
         <!--top-->
-        untitled incremental (v1.1.0 Part 1) <br>
-        Endgame: <b>1e33 Points</b> <br>
+        untitled incremental (v1.1.0) <br>
+        <span id="overheadstuff">is this appears then error</span> <br>
         _________________________________ <br>
         <h2>You have {{ frt(player.points) }} Points</h2>
 
@@ -42,6 +42,7 @@
         <div id="points-tab" style="display: none;">
             <div id="subtab-selector">
                 <button onclick="swtichOnClick_boostersPoints()">Boosters</button>
+                <button onclick="swtichOnClick_superPoints()" id="tab-points-super" style="display: inline-block; background-color: rgb(207, 138, 216); border-color: rgb(117, 68, 119);">Super-Points</button>
             </div> <br>
 
             <div id="booster-points-tab" style="display: block;">
@@ -75,6 +76,58 @@
                         <br> This row boost Boosters <br>
                     </div>
                 </div>
+            </div>
+
+            <div id="super-points-tab" style="display: none;">
+                <b style="color: plum; font-size: x-large;">{{ frt(player.spoints) }} / {{ frt(player.spoints_cap) }} Super-Points</b>, which boosts Point gain by x{{ frt(new Decimal(1.7).pow(player.spoints)) }} <br> <br>
+                You reset Pre-Prestige content (except upgrades) and Prestige Points for Super-Points, which boosts Point gain exponentially <br>
+                This currency has a cap. To increase it complete "Super-Score" challenge. The cap increase is based on challenge's score. <br>
+                Super-Points based on best Point amount starting from 1e100. <br> <br>
+
+                <button onclick="superreset()" id="superReset" style="background-color: rgb(207, 138, 216); border-color: rgb(117, 68, 119);">
+                    <b>[ Super-Point Reset ]</b> <br>
+                    Reset Pre-Prestige content (except upgrades) and Prestige Points in exchange of Super-Points <br> <br>
+                    {{ player.super_gain_desc }}
+                </button> <br><br>
+                <hr>Challenge<hr><br><br>
+
+                <button onclick="enterChallenge(1)" id="c1" style="background-color: black; border-color: rgb(117, 68, 119);">
+                    <br>
+                    <b style="color: white;">[ C1 | Super-Score ]</b> <br>
+                    <span style="color: white; font-size: small;">Best Points: {{ frt(player.challenges[1].Best) }}</span> <br> <br>
+                    <b style="color: lightcoral; font-size: larger;">Penalty:</b> <br>
+                    <b style="color: rgb(235, 82, 82);">^0.25 Point gain</b> <br> <br>
+                    <b style="color: lightgreen; font-size: larger;">Goal:</b> <br>
+                    <b style="color: rgb(62, 228, 62);">1T Points</b> <br> <br>
+                    <b style="color: lightblue; font-size: larger;">Reward:</b> <br>
+                    <b style="color: rgb(91, 190, 223);">Your best Points in challenge converts into "Score" ({{ frt(player.challenges[1].Score) }}), which increases S-Point cap by -> x{{ frt(player.challenges[1].Score.pow(0.5)) }} <br> On first completion unlock this challenge's milestones</b> <br> <br>
+                    <span style="color: white;"> Entering this challenge you will perform S-Points reset without reward!</span>
+                    <br><br>
+                </button> <br> <br> <br>
+
+                <span id="milestones-1-txt"><hr>Milestones<hr></span><br>
+                <span id="milestones-1-txt">Coming out at v1.1.1</span><br>
+                <!--<div id="milestones-1" style="display: flex; flex-direction: column; text-align: center;">
+                    <div style="background-color: rgb(59, 39, 61); border-color: rgb(207, 138, 216); height: 90px; width: 800px; margin-bottom: 10px; margin: auto;">
+                        <br>
+                        <b style="font-size: larger;">#1 || Score boost Point gain (x1)</b> <br>
+                        <hr>
+                        Require: 100 Score
+                    </div> <br>
+                    <div style="background-color: rgb(59, 39, 61); border-color: rgb(207, 138, 216); height: 90px; width: 800px; margin-bottom: 10px; margin: auto;">
+                        <br>
+                        <b style="font-size: larger;">#2 || Increase 31's upgrade effect based on Score (+0.05)</b> <br>
+                        <hr>
+                        Require: 500 Score
+                    </div> <br>
+                    <div style="background-color: rgb(59, 39, 61); border-color: rgb(207, 138, 216); height: 90px; width: 800px; margin-bottom: 10px; margin: auto;">
+                        <br>
+                        <b style="font-size: larger;">#3 || You keep Score on Prestige</b> <br>
+                        <hr>
+                        Require: 4,000 Score
+                    </div>
+                </div>-->
+                <br><br><br><br>
             </div>
         </div>
 
@@ -126,7 +179,7 @@
                     <div id="row1Buybales" style="display: flex;">
                         <div id="buyable1" style="background-color: rgb(0, 45, 97); height: 190px; width: 300px; margin-right: 20px;">
                             <br><b style="color: lightblue;">[ Buyable I ]</b> ({{frt(player.buyables[1].Bought)}}) <br> <br>
-                            Effect: <b>x{{ frt(player.buyables[1].Effect) }} Points</b> <br>
+                            Effect: <b>x{{ frt(player.buyables[1].Effect) }} Points<span id="b1ed"></span></b> <br>
                             Cost: <b style="color: aqua;">{{ frt(player.buyables[1].Cost) }} Prestige Points</b> <br> <br>
                             <button onclick="buyBuyable(1, 'single')">Buy 1</button> <br> <br>
                             <button onclick="buyBuyable(1, 'max')">Buy Max</button><br>
@@ -155,6 +208,7 @@
             <button onclick="set(1)" id="setting-1">Enable upgrade log: ON</button> <br> <br>
             Confirmations <br><br>
             <button onclick="set(100)" id="setting-100">Prestige: ON</button> <br> <br>
+            <button onclick="set(101)" id="setting-101">Super-Points: ON</button> <br> <br>
 
             <br><br><br><hr>
             Save <hr>
