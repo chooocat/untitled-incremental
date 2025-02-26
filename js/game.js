@@ -192,6 +192,7 @@ function checkUnlocks() {
     if (player.challenges[1].Reached == true) {document.getElementById("milestones-1").style.display = "flex"} else {document.getElementById("milestones-1").style.display = "none"}
 
     if (player.prestiged) {document.getElementById("setting-100").style.display = "inline-block"} else {document.getElementById("setting-100").style.display = "none"}
+    if (hasUpgrade(30)) {document.getElementById("setting-101").style.display = "inline-block"} else {document.getElementById("setting-101").style.display = "none"}
     if (player.enableUpgLogs == true) {document.getElementById("upgrade-log").style.display = "inline-block"} else {document.getElementById("upgrade-log").style.display = "none"}
 }
 
